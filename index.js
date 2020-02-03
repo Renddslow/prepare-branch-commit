@@ -11,8 +11,8 @@ const execute = promisify(exec);
   const msg = (await read(msgFile)).toString();
 
   const regexpr = /((?<!([A-Z]{1,10})-?)[A-Z]+-\d+)/g;
-  const branch = execute('git branch | grep "* feature/"');
-  console.log(branch);
+  const out = await execute('git branch');
+  const [branch] = out.stdout.split('\n').filter((b) => b.includes('*'));
 
   if (!branch) return;
 
@@ -21,8 +21,10 @@ const execute = promisify(exec);
   if (!match) return;
 
   const issueNumber = match[0];
+  const newMsg = `[${issueNumber}] ${msg}`;
 
-  console.log(issueNumber);
-})().then(() => {
-  process.exit(2);
+  await write(msgFile, newMsg);
+})().catch((e) => {
+  console.error('There was an issue getting your branch name.', e);
+  process.exit(1);
 });
