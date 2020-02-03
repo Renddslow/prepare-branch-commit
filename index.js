@@ -1,16 +1,18 @@
 const fs = require('fs');
 const { promisify } = require('util');
-const { execSync } = require('child_process');
+const { exec } = require('child_process');
 
 const read = promisify(fs.readFile);
 const write = promisify(fs.writeFile);
+const execute = promisify(exec);
 
 (async () => {
   const [msgFile] = process.env.HUSKY_GIT_PARAMS.split(' ');
   const msg = (await read(msgFile)).toString();
 
   const regexpr = /((?<!([A-Z]{1,10})-?)[A-Z]+-\d+)/g;
-  const branch = execSync('git branch | grep "* feature/"');
+  const branch = execute('git branch | grep "* feature/"');
+  console.log(branch);
 
   if (!branch) return;
 
