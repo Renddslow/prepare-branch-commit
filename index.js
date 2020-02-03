@@ -21,13 +21,10 @@ const execute = promisify(exec);
   if (!match) return;
 
   const issueNumber = match[0];
+  const newMsg = `[${issueNumber}] ${msg}`;
 
-  console.log(issueNumber);
-})()
-  .then(() => {
-    process.exit(2);
-  })
-  .catch((e) => {
-    console.log(e);
-    process.exit(2);
-  });
+  await write(msgFile, newMsg);
+})().catch((e) => {
+  console.error('There was an issue getting your branch name.', e);
+  process.exit(1);
+});
