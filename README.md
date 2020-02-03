@@ -5,13 +5,19 @@
 ## Install
 
 ```
-$ yarn add prepare-branch-commit
+$ yarn add --dev prepare-branch-commit
 ```
 
 ## Usage
 
+prepare-branch-commit is meant to be run as a Husky hook:
+
 ```json
-
+{
+  // ...
+  "husky": {
+    "prepare-commit-msg": "prepare-branch-commit"
+  }
+  // ...
+}
 ```
-
-## API
