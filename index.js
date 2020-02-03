@@ -11,6 +11,7 @@ const write = promisify(fs.writeFile);
 
   const regexpr = /((?<!([A-Z]{1,10})-?)[A-Z]+-\d+)/g;
   const branch = execSync('git branch | grep "* feature/"').toString();
+  console.log(branch);
   const match = regexpr.exec(branch);
 
   if (!match) return;
