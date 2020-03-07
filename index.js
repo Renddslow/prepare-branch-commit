@@ -21,8 +21,8 @@ const execute = promisify(exec);
 
   if (!match) return;
 
-  const issueNumber = match[0];
-  const newMsg = `[${issueNumber}] ${msg}`;
+  const issueTag = `[${match[0]}]`;
+  const newMsg = msg.startsWith(issueTag) ? msg : `${issueTag} ${msg}`;
 
   await write(msgFile, newMsg);
 })().catch((e) => {
