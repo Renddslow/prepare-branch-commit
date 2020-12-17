@@ -11,7 +11,7 @@ const execute = promisify(exec);
   const [msgFile] = process.env.HUSKY_GIT_PARAMS.split(' ');
   const msg = (await read(msgFile)).toString();
 
-  const regexpr = /((?<!([A-Z]{1,10})-?)[A-Z]+-\d+)/g;
+  const regexpr = /((?<!([A-Z]{1,10})-?)[A-Z]{1,10}-\d+-?)+/g;
   const out = await execute('git branch');
   const [branch] = out.stdout.split('\n').filter((b) => b.includes('*'));
 
@@ -21,7 +21,12 @@ const execute = promisify(exec);
 
   if (!match) return;
 
-  const issueTag = `[${match[0]}]`;
+  const issueTag = match[0]
+    .split('-')
+    .map((_, i, array) => i % 2 === 0 ? `[${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}]` : null)
+    .filter((tag, i, array) => tag.length > 0 && array.findIndex(tag) === i)
+    .reduce((acc, val) => val === null ? acc : `${acc} ${val}`, '')
+    .trim();
   const newMsg = msg.startsWith(issueTag) ? msg : `${issueTag} ${msg}`;
 
   await write(msgFile, newMsg);
