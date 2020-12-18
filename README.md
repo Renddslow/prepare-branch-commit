@@ -21,3 +21,14 @@ prepare-branch-commit is meant to be run as a Husky hook:
   // ...
 }
 ```
+
+## Usage Examples
+```
+branch name: feature/ABC-123-new-screen
+commit prefix: [ABC-123]
+
+branch name: hotfix/FUN-456-ABC-123-bugfix-time
+commit prefix: [ABC-123] [FUN-456]
+```
+
+
