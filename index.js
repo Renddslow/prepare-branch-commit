@@ -27,6 +27,7 @@ const execute = promisify(exec);
       i % 2 === 0 ? `[${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}]` : null,
     )
     .filter((tag, i, array) => tag.length > 0 && array.findIndex(tag) === i)
+    .sort()
     .reduce((acc, val) => (val === null ? acc : `${acc} ${val}`), '')
     .trim();
   const newMsg = msg.startsWith(issueTag) ? msg : `${issueTag} ${msg}`;
