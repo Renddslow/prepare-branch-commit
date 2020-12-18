@@ -29,7 +29,7 @@ const execute = promisify(exec);
       i % 2 === 0 ? `[${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}]` : null,
     )
     // Only keep valid tags
-    .filter((tag, i, array) => tag.length > 0 && array.findIndex(tag) === i)
+    .filter((tag, i, array) => tag && tag.length > 0 && array.findIndex((val) => tag === val) === i)
     // Sort alphabetically
     .sort()
     // Combine to a single string
