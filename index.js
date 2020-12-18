@@ -22,12 +22,17 @@ const execute = promisify(exec);
   if (!match) return;
 
   const issueTag = match[0]
+    //Divide to tag name and number
     .split('-')
+    // Combine tag name and number
     .map((_, i, array) =>
       i % 2 === 0 ? `[${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}]` : null,
     )
+    // Only keep valid tags
     .filter((tag, i, array) => tag.length > 0 && array.findIndex(tag) === i)
+    // Sort alphabetically
     .sort()
+    // Combine to a single string
     .reduce((acc, val) => (val === null ? acc : `${acc} ${val}`), '')
     .trim();
   const newMsg = msg.startsWith(issueTag) ? msg : `${issueTag} ${msg}`;
