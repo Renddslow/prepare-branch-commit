@@ -22,7 +22,9 @@ const execute = promisify(exec);
   if (!match) return;
 
   const issueTag = match[0]
-    //Divide to tag name and number
+    // Remove extra hyphen
+    .replace(/-$/, '')
+    // Divide to tag name and number
     .split('-')
     // Combine tag name and number
     .map((_, i, array) =>
