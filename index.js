@@ -1,23 +1,8 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const { promisify } = require('util');
-const { exec } = require('child_process');
 
-const read = promisify(fs.readFile);
-const write = promisify(fs.writeFile);
-const execute = promisify(exec);
-
-(async () => {
-  const [msgFile] = process.env.HUSKY_GIT_PARAMS.split(' ');
-  const msg = (await read(msgFile)).toString();
-
-  const regexpr = /((?<!([A-Z]{1,10})-?)[A-Z]{1,10}-\d+-?)+/g;
-  const out = await execute('git branch');
-  const [branch] = out.stdout.split('\n').filter((b) => b.includes('*'));
-
-  if (!branch) return;
-
-  const match = regexpr.exec(branch.toString());
+const regexpr = /([A-Z]{1,10}-\d+-?)+/;
+const processBranchString = (branch, msg) => {
+  const match = regexpr.exec(branch);
 
   if (!match) return;
 
@@ -37,10 +22,36 @@ const execute = promisify(exec);
     // Combine to a single string
     .reduce((acc, val) => (val === null ? acc : `${acc} ${val}`), '')
     .trim();
-  const newMsg = msg.startsWith(issueTag) ? msg : `${issueTag} ${msg}`;
+  return (msg.startsWith(issueTag) ? msg : `${issueTag} ${msg.trim()}`).trim();
+};
 
-  await write(msgFile, newMsg);
-})().catch((e) => {
-  console.error('There was an issue getting your branch name.', e);
-  process.exit(1);
-});
+if (require.main === module) {
+  const fs = require('fs');
+  const { promisify } = require('util');
+  const { exec } = require('child_process');
+
+  const read = promisify(fs.readFile);
+  const write = promisify(fs.writeFile);
+  const execute = promisify(exec);
+  (async () => {
+    if (process.env.HUSKY_GIT_PARAMS) {
+      const [msgFile] = process.env.HUSKY_GIT_PARAMS.split(' ');
+      const msg = (await read(msgFile)).toString();
+
+      const out = await execute('git branch');
+      const [branch] = out.stdout.split('\n').filter((b) => b.includes('*'));
+
+      if (!branch) return;
+
+      const newMsg = processBranchString(branch.toString(), msg);
+      if (newMsg) {
+        await write(msgFile, newMsg);
+      }
+    }
+  })().catch((e) => {
+    console.error('There was an issue getting your branch name.', e);
+    process.exit(1);
+  });
+}
+
+exports.processBranchString = processBranchString;
