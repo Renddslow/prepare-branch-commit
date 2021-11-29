@@ -12,6 +12,12 @@ $ yarn add --dev prepare-branch-commit
 
 prepare-branch-commit is meant to be run as a Husky hook:
 
+**From Husky v7+**
+```bash
+npx husky add .husky/prepare-commit-msg 'npx --no-install prepare-branch-commit "$(echo $)1"'
+```
+
+**Husky v4 and below**
 ```json
 {
   // ...
