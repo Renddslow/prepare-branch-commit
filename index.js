@@ -34,8 +34,10 @@ if (require.main === module) {
   const write = promisify(fs.writeFile);
   const execute = promisify(exec);
   (async () => {
-    if (process.env.HUSKY_GIT_PARAMS) {
-      const [msgFile] = process.env.HUSKY_GIT_PARAMS.split(' ');
+    const [msgFile] = process.env.HUSKY_GIT_PARAMS
+      ? process.env.HUSKY_GIT_PARAMS.split(' ')
+      : process.argv.slice(2);
+    if (msgFile) {
       const msg = (await read(msgFile)).toString();
 
       const out = await execute('git branch');
