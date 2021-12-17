@@ -1,0 +1,13 @@
+on: push
+
+jobs:
+  issue-tags:
+    runs-on: ubuntu-latest
+    name: Extract Issue Tags
+    steps:
+      - name: Extract Issue Tags
+        id: issues
+        uses: alehechka/prepare-branch-commit@feature/KNOX-190
+      # Use the output from the `hello` step
+      - name: Print Issue Tags
+        run: echo "Found the following tags ${{ steps.issues.outputs.issue-tags }}"

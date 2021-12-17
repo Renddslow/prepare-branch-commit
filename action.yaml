@@ -1,0 +1,13 @@
+name: 'Extract Issue Tags'
+description: 'Extracts Issue Tags from branch name'
+inputs:
+  branch-name:
+    description: 'Branch Name'
+    required: false
+    default: ${{ github.ref_name }}
+outputs:
+  issue-tags:
+    description: 'Issue Tags found formatted as CSV'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
