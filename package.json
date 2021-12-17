@@ -13,7 +13,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
+      "pre-commit": "lint-staged && yarn build:gha && git add dist/*",
       "prepare-commit-msg": "node index.js"
     }
   },
