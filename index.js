@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const regexpr = /([A-Z]{1,10}-\d+-?)+/;
-const extractTicketLabels = (branch, prefix, suffix) => {
+const extractTicketLabels = (branch, prefix = '', suffix = '') => {
   const match = regexpr.exec(branch);
 
   if (!match) return;
