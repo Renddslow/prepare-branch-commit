@@ -1,6 +1,56 @@
 /******/ (() => {
   // webpackBootstrap
   /******/ var __webpack_modules__ = {
+    /***/ 932: /***/ (__unused_webpack_module, exports) => {
+      const regexpr = /([A-Z]{1,10}-\d+-?)+/;
+      const extractTicketLabels = (branch, prefix, suffix) => {
+        const match = regexpr.exec(branch);
+
+        if (!match) return;
+
+        const issueTags = match[0]
+          // Remove extra hyphen
+          .replace(/-$/, '')
+          // Divide to tag name and number
+          .split('-')
+          // Combine tag name and number
+          .map((_, i, array) =>
+            i % 2 === 0
+              ? `${prefix}${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}${suffix}`
+              : null,
+          )
+          // Only keep valid tags
+          .filter(
+            (tag, i, array) => tag && tag.length > 0 && array.findIndex((val) => tag === val) === i,
+          )
+          // Sort alphabetically
+          .sort();
+
+        return issueTags;
+      };
+
+      const processBranchString = (branch, msg) => {
+        const issueTags = extractTicketLabels(branch, '[', ']');
+
+        if (!issueTags) return;
+
+        const issueTag = issueTags
+          // Combine to a single string
+          .reduce((acc, val) => (val === null ? acc : `${acc} ${val}`), '')
+          .trim();
+
+        return (msg.startsWith(issueTag) ? msg : `${issueTag} ${msg.trim()}`).trim();
+      };
+
+      if (false) {
+      }
+
+      exports.processBranchString = processBranchString;
+      exports.extractTicketLabels = extractTicketLabels;
+
+      /***/
+    },
+
     /***/ 351: /***/ function(__unused_webpack_module, exports, __nccwpck_require__) {
       'use strict';
 
@@ -1800,7 +1850,7 @@
   // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
   (() => {
     const core = __nccwpck_require__(186);
-    const { extractTicketLabels } = required('./index.js');
+    const { extractTicketLabels } = __nccwpck_require__(932);
 
     try {
       const branchName = core.getInput('branch-name');

@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-const { extractTicketLabels } = required('./index.js');
+const { extractTicketLabels } = require('./index.js');
 
 try {
   const branchName = core.getInput('branch-name');
