@@ -5,7 +5,6 @@
 /***/ ((__unused_webpack_module, exports) => {
 
 
-
 const regexpr = /([A-Z]{1,10}-\d+-?)+/;
 const extractTicketLabels = (branch, prefix = '', suffix = '') => {
   const match = regexpr.exec(branch);
