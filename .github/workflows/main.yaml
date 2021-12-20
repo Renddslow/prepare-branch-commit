@@ -9,16 +9,25 @@ jobs:
     steps:
       - name: Extract Issue Tags
         id: issues-default
-        uses: alehechka/prepare-branch-commit@feature/KNOX-190
+        uses: Renddslow/prepare-branch-commit@master
 
       - name: Print Issue Tags
         run: echo "Found the following tags ${{ steps.issues-default.outputs.issue-tags }}"
         
       - name: Extract Issue Tags
         id: issues-input
-        uses: alehechka/prepare-branch-commit@feature/KNOX-190
+        uses: Renddslow/prepare-branch-commit@master
         with:
           branch-name: 'feature/KNOX-190-DEN-389'
 
       - name: Print Issue Tags
         run: echo "Found the following tags ${{ steps.issues-input.outputs.issue-tags }}"
+
+      - name: Extract Issue Tags
+        id: issues-fail
+        uses: Renddslow/prepare-branch-commit@master
+        with:
+          branch-name: 'feature/something-not-valid'
+
+      - name: Print Issue Tags
+        run: echo "Found the following tags ${{ steps.issues-fail.outputs.issue-tags }}"
