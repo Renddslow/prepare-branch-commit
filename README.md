@@ -48,5 +48,5 @@ The primary issue tag extraction step can also be used during GitHub Actions to 
 steps:
   - name: Extract Issue Tags
     id: issues-default # usage: ${{ steps.issues-default.outputs.issue-tags }}
-    uses: Renddslow/prepare-branch-commit@v1
+    uses: Renddslow/prepare-branch-commit@v1.0.1
 ```
