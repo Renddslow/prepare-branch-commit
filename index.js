@@ -1,27 +1,38 @@
 #!/usr/bin/env node
 
 const regexpr = /([A-Z]{1,10}-\d+-?)+/;
-const processBranchString = (branch, msg) => {
+const extractTicketLabels = (branch, prefix = '', suffix = '') => {
   const match = regexpr.exec(branch);
 
   if (!match) return;
 
-  const issueTag = match[0]
+  const issueTags = match[0]
     // Remove extra hyphen
     .replace(/-$/, '')
     // Divide to tag name and number
     .split('-')
     // Combine tag name and number
     .map((_, i, array) =>
-      i % 2 === 0 ? `[${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}]` : null,
+      i % 2 === 0 ? `${prefix}${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}${suffix}` : null,
     )
     // Only keep valid tags
     .filter((tag, i, array) => tag && tag.length > 0 && array.findIndex((val) => tag === val) === i)
     // Sort alphabetically
-    .sort()
+    .sort();
+
+  return issueTags;
+};
+
+const processBranchString = (branch, msg) => {
+  const issueTags = extractTicketLabels(branch, '[', ']');
+
+  if (!issueTags) return;
+
+  const issueTag = issueTags
     // Combine to a single string
     .reduce((acc, val) => (val === null ? acc : `${acc} ${val}`), '')
     .trim();
+
   return (msg.startsWith(issueTag) ? msg : `${issueTag} ${msg.trim()}`).trim();
 };
 
@@ -57,3 +68,4 @@ if (require.main === module) {
 }
 
 exports.processBranchString = processBranchString;
+exports.extractTicketLabels = extractTicketLabels;

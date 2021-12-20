@@ -1,0 +1,24 @@
+name: Text Extract Issue Tags
+
+on: push
+
+jobs:
+  issue-tags:
+    runs-on: ubuntu-latest
+    name: Extract Issue Tags
+    steps:
+      - name: Extract Issue Tags
+        id: issues-default
+        uses: alehechka/prepare-branch-commit@feature/KNOX-190
+
+      - name: Print Issue Tags
+        run: echo "Found the following tags ${{ steps.issues-default.outputs.issue-tags }}"
+        
+      - name: Extract Issue Tags
+        id: issues-input
+        uses: alehechka/prepare-branch-commit@feature/KNOX-190
+        with:
+          branch-name: 'feature/KNOX-190-DEN-389'
+
+      - name: Print Issue Tags
+        run: echo "Found the following tags ${{ steps.issues-input.outputs.issue-tags }}"
