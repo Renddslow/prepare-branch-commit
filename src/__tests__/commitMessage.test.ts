@@ -1,4 +1,4 @@
-const { processBranchString } = require('../index');
+import { processBranchString } from '../index';
 
 describe('Branch parser', () => {
   it('should handle blank inputs', () => {

@@ -1,7 +1,10 @@
-#!/usr/bin/env node
+import { promisify } from 'util';
+import { readFile, writeFile } from 'fs';
+import { exec } from 'child_process';
 
 const regexpr = /([A-Z]{1,10}-\d+-?)+/;
-const extractTicketLabels = (branch, prefix = '', suffix = '') => {
+
+export const extractTicketLabels = (branch: string, prefix = '', suffix = '') => {
   const match = regexpr.exec(branch);
 
   if (!match) return;
@@ -18,15 +21,16 @@ const extractTicketLabels = (branch, prefix = '', suffix = '') => {
       )
       // Only keep valid tags
       .filter(
-        (tag, i, array) => tag && tag.length > 0 && array.findIndex((val) => tag === val) === i,
+        (tag, i, array): tag is string =>
+          !!tag && tag.length > 0 && array.findIndex((val) => tag === val) === i,
       )
       // Sort alphabetically
       .sort()
   );
 };
 
-const prependTagToMessage = (issueTag, message) => {
-  const splitMessage = message.split('\n');
+const prependTagToMessage = (issueTag: string, message: string) => {
+  const splitMessage = message.split(/\n/);
   const firstNonCommentLine = splitMessage.findIndex((line) => !line.trimLeft().startsWith('#'));
   if (firstNonCommentLine < 0) {
     return message;
@@ -38,7 +42,7 @@ const prependTagToMessage = (issueTag, message) => {
   ].join('\n');
 };
 
-const processBranchString = (branch, msg) => {
+export const processBranchString = (branch: string, msg: string) => {
   const issueTags = extractTicketLabels(branch, '[', ']');
 
   if (!issueTags) return;
@@ -51,15 +55,11 @@ const processBranchString = (branch, msg) => {
   return (msg.startsWith(issueTag) ? msg : prependTagToMessage(issueTag, msg)).trim();
 };
 
-if (require.main === module) {
-  const fs = require('fs');
-  const { promisify } = require('util');
-  const { exec } = require('child_process');
-
-  const read = promisify(fs.readFile);
-  const write = promisify(fs.writeFile);
+const main = () => {
+  const read = promisify(readFile);
+  const write = promisify(writeFile);
   const execute = promisify(exec);
-  (async () => {
+  return Promise.resolve(async () => {
     const [msgFile] = process.env.HUSKY_GIT_PARAMS
       ? process.env.HUSKY_GIT_PARAMS.split(' ')
       : process.argv.slice(2);
@@ -76,11 +76,12 @@ if (require.main === module) {
         await write(msgFile, newMsg);
       }
     }
-  })().catch((e) => {
+  }).catch((e) => {
     console.error('There was an issue getting your branch name.', e);
     process.exit(1);
   });
-}
+};
 
-exports.processBranchString = processBranchString;
-exports.extractTicketLabels = extractTicketLabels;
+if (require.main === module) {
+  void main();
+}
