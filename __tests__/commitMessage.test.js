@@ -56,4 +56,27 @@ describe('Branch parser', () => {
       ),
     ).toBe('[ABC-123] [FUN-456] [ME-789] [MYFUNAPP-101] Adding a new btn');
   });
+
+  it("shouln't prepend to comment", () => {
+    expect(
+      processBranchString(
+        'feature/ABC-123-new-btn',
+        'Test with a following comment\n# This is a comment',
+      ),
+    ).toBe('[ABC-123] Test with a following comment\n# This is a comment');
+    expect(
+      processBranchString(
+        'feature/ABC-123-new-btn',
+        '# This is a comment\nTest with a preceding comment',
+      ),
+    ).toBe('# This is a comment\n[ABC-123] Test with a preceding comment');
+    expect(
+      processBranchString(
+        'feature/ABC-123-new-btn',
+        '      # This is a comment with leading spaces\n# And here is another comment\nTest with a preceding comment',
+      ),
+    ).toBe(
+      '# This is a comment with leading spaces\n# And here is another comment\n[ABC-123] Test with a preceding comment',
+    );
+  });
 });

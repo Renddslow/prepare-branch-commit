@@ -5,28 +5,42 @@
 /***/ ((__unused_webpack_module, exports) => {
 
 
-
 const regexpr = /([A-Z]{1,10}-\d+-?)+/;
 const extractTicketLabels = (branch, prefix = '', suffix = '') => {
   const match = regexpr.exec(branch);
 
   if (!match) return;
 
-  const issueTags = match[0]
-    // Remove extra hyphen
-    .replace(/-$/, '')
-    // Divide to tag name and number
-    .split('-')
-    // Combine tag name and number
-    .map((_, i, array) =>
-      i % 2 === 0 ? `${prefix}${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}${suffix}` : null,
-    )
-    // Only keep valid tags
-    .filter((tag, i, array) => tag && tag.length > 0 && array.findIndex((val) => tag === val) === i)
-    // Sort alphabetically
-    .sort();
+  return (
+    match[0]
+      // Remove extra hyphen
+      .replace(/-$/, '')
+      // Divide to tag name and number
+      .split('-')
+      // Combine tag name and number
+      .map((_, i, array) =>
+        i % 2 === 0 ? `${prefix}${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}${suffix}` : null,
+      )
+      // Only keep valid tags
+      .filter(
+        (tag, i, array) => tag && tag.length > 0 && array.findIndex((val) => tag === val) === i,
+      )
+      // Sort alphabetically
+      .sort()
+  );
+};
 
-  return issueTags;
+const prependTagToMessage = (issueTag, message) => {
+  const splitMessage = message.split('\n');
+  const firstNonCommentLine = splitMessage.findIndex((line) => !line.trimLeft().startsWith('#'));
+  if (firstNonCommentLine < 0) {
+    return message;
+  }
+  return [
+    ...splitMessage.slice(0, firstNonCommentLine),
+    `${issueTag} ${splitMessage[firstNonCommentLine].trim()}`,
+    ...splitMessage.slice(firstNonCommentLine + 1),
+  ].join('\n');
 };
 
 const processBranchString = (branch, msg) => {
@@ -39,7 +53,7 @@ const processBranchString = (branch, msg) => {
     .reduce((acc, val) => (val === null ? acc : `${acc} ${val}`), '')
     .trim();
 
-  return (msg.startsWith(issueTag) ? msg : `${issueTag} ${msg.trim()}`).trim();
+  return (msg.startsWith(issueTag) ? msg : prependTagToMessage(issueTag, msg)).trim();
 };
 
 if (false) {}

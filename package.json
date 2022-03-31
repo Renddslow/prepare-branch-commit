@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/jest/bin/jest.js",
-    "build:gha": "ncc build main.js --license licenses.txt",
+    "build:gha": "ncc build gha.js --license licenses.txt",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -18,6 +18,9 @@
     ]
   },
   "prettier": "@dmsi/prettier-config",
+  "dependencies": {
+    "@actions/core": "^1.6.0"
+  },
   "devDependencies": {
     "@dmsi/prettier-config": "^1.3.0",
     "@vercel/ncc": "^0.33.0",
@@ -28,8 +31,5 @@
   },
   "bin": {
     "prepare-branch-commit": "index.js"
-  },
-  "dependencies": {
-    "@actions/core": "^1.6.0"
   }
 }

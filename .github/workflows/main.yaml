@@ -13,7 +13,7 @@ jobs:
 
       - name: Print Issue Tags
         run: echo "Found the following tags ${{ steps.issues-default.outputs.issue-tags }}"
-        
+
       - name: Extract Issue Tags
         id: issues-input
         uses: Renddslow/prepare-branch-commit@master
