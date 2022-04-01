@@ -1,0 +1,53 @@
+# We need to make sure the checked-in `index.js` actually matches what we expect it to be.
+name: Check GHA Dist
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  check-dist:
+    name: Check Dist has been Updated
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Node
+        id: node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --prefer-offline
+        shell: bash
+
+      - name: Rebuild the dist file
+        run: yarn build:gha
+        shell: bash
+
+      - name: Compare the expected and actual dist/ directories
+        id: diff
+        run: |
+          if [ "$(git diff --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
+            echo "Detected uncommitted changes to GHA script after build.  See attached artifacts and status below:"
+            git diff
+            exit 1
+          fi
+        shell: bash
+
+      # If dist/ was different from expected, upload the expected version as an artifact
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() && steps.diff.conclusion == 'failure' }}
+        with:
+          name: dist
+          path: dist/
