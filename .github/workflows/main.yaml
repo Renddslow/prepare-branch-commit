@@ -7,16 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     name: Extract Issue Tags
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Extract Issue Tags
         id: issues-default
-        uses: Renddslow/prepare-branch-commit@master
+        uses: ./
 
       - name: Print Issue Tags
         run: echo "Found the following tags ${{ steps.issues-default.outputs.issue-tags }}"
 
       - name: Extract Issue Tags
         id: issues-input
-        uses: Renddslow/prepare-branch-commit@master
+        uses: ./
         with:
           branch-name: 'feature/KNOX-190-DEN-389'
 
@@ -25,7 +28,7 @@ jobs:
 
       - name: Extract Issue Tags
         id: issues-fail
-        uses: Renddslow/prepare-branch-commit@master
+        uses: ./
         with:
           branch-name: 'feature/something-not-valid'
 
