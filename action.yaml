@@ -1,5 +1,6 @@
 name: 'Extract Issue Tags'
 description: 'Extracts Issue Tags from branch name'
+icon: 'align-left'
 inputs:
   branch-name:
     description: 'Branch Name'
