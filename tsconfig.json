@@ -7,7 +7,7 @@
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "module": "AMD",
+    "module": "commonjs",
     "newLine": "lf"
   },
   "include": ["src"]

@@ -1,9 +1,9 @@
-import core from '@actions/core';
+import { getInput, setFailed, setOutput } from '@actions/core';
 import { extractTicketLabels } from './index.js';
 
 const runAction = () => {
   try {
-    const branchName = core.getInput('branch-name');
+    const branchName = getInput('branch-name');
 
     const issueTags = extractTicketLabels(branchName);
 
@@ -14,9 +14,9 @@ const runAction = () => {
 
     const tagsCSV = issueTags.join(',');
 
-    core.setOutput('issue-tags', tagsCSV);
+    setOutput('issue-tags', tagsCSV);
   } catch (error) {
-    core.setFailed((error as Error).message);
+    setFailed((error as Error).message);
   }
 };
 
