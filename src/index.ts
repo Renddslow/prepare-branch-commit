@@ -45,7 +45,10 @@ const prependTagToMessage = (issueTag: string, message: string) => {
 export const processBranchString = (branch: string, msg: string) => {
   const issueTags = extractTicketLabels(branch, '[', ']');
 
-  if (!issueTags) return;
+  if (!issueTags) {
+    console.log('No issue tags found in branch name');
+    return;
+  }
 
   const issueTag = issueTags
     // Combine to a single string
@@ -69,9 +72,12 @@ const main = () => {
       const out = await execute('git branch');
       const [branch] = out.stdout.split('\n').filter((b) => b.includes('*'));
 
-      if (!branch) return;
+      if (!branch) {
+        console.log('No current branch was found');
+      }
 
       const newMsg = processBranchString(branch.toString(), msg);
+      process.env.PBC_DEBUG && console.log(newMsg);
       if (newMsg) {
         await write(msgFile, newMsg);
       }

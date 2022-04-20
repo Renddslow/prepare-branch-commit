@@ -9,8 +9,9 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/jest/bin/jest.js",
-    "build": "tsc ./src/index.ts && mkdir -p ./bin && sed '1s;^;#!/usr/bin/env node\\n;' ./src/index.js > ./bin/index.js; rm ./src/index.js",
+    "build": "yarn build:cjs && mkdir -p ./bin && sed '1s;^;#!/usr/bin/env node\\n;' ./src/index.js > ./bin/index.js; rm ./src/index.js",
     "build:all": "yarn build && yarn build:gha",
+    "build:cjs": "esbuild --outfile=src/index.js src/index.ts --minify --format=cjs",
     "build:gha": "ncc build ./src/gha.ts --license licenses.txt",
     "prepare": "husky install"
   },
@@ -28,6 +29,7 @@
     "@types/jest": "^24.0.23",
     "@types/node": "^12.12.14",
     "@vercel/ncc": "^0.33.0",
+    "esbuild": "^0.14.36",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "lint-staged": "^10.0.7",
