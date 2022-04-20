@@ -1612,7 +1612,7 @@ const main = () => {
     const read = (0, util_1.promisify)(fs_1.readFile);
     const write = (0, util_1.promisify)(fs_1.writeFile);
     const execute = (0, util_1.promisify)(child_process_1.exec);
-    return Promise.resolve(async () => {
+    return new Promise(async () => {
         const [msgFile] = process.env.HUSKY_GIT_PARAMS
             ? process.env.HUSKY_GIT_PARAMS.split(' ')
             : process.argv.slice(2);

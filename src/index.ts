@@ -62,7 +62,7 @@ const main = () => {
   const read = promisify(readFile);
   const write = promisify(writeFile);
   const execute = promisify(exec);
-  return Promise.resolve(async () => {
+  return new Promise(async () => {
     const [msgFile] = process.env.HUSKY_GIT_PARAMS
       ? process.env.HUSKY_GIT_PARAMS.split(' ')
       : process.argv.slice(2);
