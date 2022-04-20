@@ -1597,8 +1597,10 @@ const prependTagToMessage = (issueTag, message) => {
 };
 const processBranchString = (branch, msg) => {
     const issueTags = (0, exports.extractTicketLabels)(branch, '[', ']');
-    if (!issueTags)
+    if (!issueTags) {
+        console.log('No issue tags found in branch name');
         return;
+    }
     const issueTag = issueTags
         // Combine to a single string
         .reduce((acc, val) => (val === null ? acc : `${acc} ${val}`), '')
@@ -1618,9 +1620,11 @@ const main = () => {
             const msg = (await read(msgFile)).toString();
             const out = await execute('git branch');
             const [branch] = out.stdout.split('\n').filter((b) => b.includes('*'));
-            if (!branch)
-                return;
+            if (!branch) {
+                console.log('No current branch was found');
+            }
             const newMsg = (0, exports.processBranchString)(branch.toString(), msg);
+            process.env.PBC_DEBUG && console.log(newMsg);
             if (newMsg) {
                 await write(msgFile, newMsg);
             }
