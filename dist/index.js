@@ -1565,7 +1565,7 @@ exports.processBranchString = exports.extractTicketLabels = void 0;
 const util_1 = __nccwpck_require__(837);
 const fs_1 = __nccwpck_require__(147);
 const child_process_1 = __nccwpck_require__(81);
-const regexpr = /([A-Z]{1,10}-\d+-?)+/;
+const regexpr = /(?:([A-Z]{1,10})-(\d+)-?)+/;
 const extractTicketLabels = (branch, prefix = '', suffix = '') => {
     const match = regexpr.exec(branch);
     if (!match)
@@ -1579,21 +1579,27 @@ const extractTicketLabels = (branch, prefix = '', suffix = '') => {
         .map((_, i, array) => i % 2 === 0 ? `${prefix}${array[i]}-${array[i + 1] ? array[i + 1] : 'X'}${suffix}` : null)
         // Only keep valid tags
         .filter((tag, i, array) => !!tag && tag.length > 0 && array.findIndex((val) => tag === val) === i)
-        // Sort alphabetically
-        .sort());
+        // Sort alphabetically then numerically
+        .sort((a, b) => {
+        const [, aTag, aNumString] = regexpr.exec(a) ?? ['', 'a', '1'];
+        const [, bTag, bNumString] = regexpr.exec(b) ?? ['', 'a', '1'];
+        if (aTag === bTag) {
+            return Number(aNumString) > Number(bNumString) ? 1 : -1;
+        }
+        return aTag.localeCompare(bTag);
+    }));
 };
 exports.extractTicketLabels = extractTicketLabels;
 const prependTagToMessage = (issueTag, message) => {
     const splitMessage = message.split(/\n/);
     const firstNonCommentLine = splitMessage.findIndex((line) => !line.trimLeft().startsWith('#'));
-    if (firstNonCommentLine < 0) {
-        return message;
-    }
-    return [
-        ...splitMessage.slice(0, firstNonCommentLine),
-        `${issueTag} ${splitMessage[firstNonCommentLine].trim()}`,
-        ...splitMessage.slice(firstNonCommentLine + 1),
-    ].join('\n');
+    return firstNonCommentLine < 0
+        ? message
+        : [
+            ...splitMessage.slice(0, firstNonCommentLine),
+            `${issueTag} ${splitMessage[firstNonCommentLine].trim()}`,
+            ...splitMessage.slice(firstNonCommentLine + 1),
+        ].join('\n');
 };
 const processBranchString = (branch, msg) => {
     const issueTags = (0, exports.extractTicketLabels)(branch, '[', ']');

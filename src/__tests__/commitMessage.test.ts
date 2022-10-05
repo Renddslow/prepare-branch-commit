@@ -38,6 +38,11 @@ describe('Branch parser', () => {
       processBranchString('fix/FUN-456-ABC-123-ME-789-MYFUNAPP-101-new-btn', 'Adding a new btn'),
     ).toBe('[ABC-123] [FUN-456] [ME-789] [MYFUNAPP-101] Adding a new btn');
   });
+  it('should sort multiple Jira tickets numerically', () => {
+    expect(processBranchString('feature/ABC-123-FUN-456-ABC-99-FUN-100-FUN-789-new-btn', '')).toBe(
+      '[ABC-99] [ABC-123] [FUN-100] [FUN-456] [FUN-789]',
+    );
+  });
   it("shouldn't combine tags", () => {
     expect(processBranchString('feature/ABC-123-new-btn', '[ABC-123]')).toBe('[ABC-123]');
     expect(processBranchString('feature/ABC-123-new-btn', '[ABC-123] Adding a new btn')).toBe(
