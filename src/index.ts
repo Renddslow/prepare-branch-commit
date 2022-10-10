@@ -2,7 +2,7 @@ import { promisify } from 'util';
 import { readFile, writeFile } from 'fs';
 import { exec } from 'child_process';
 
-const regexpr = /([A-Z]{1,10}-\d+-?)+/;
+const regexpr = /(?:([A-Z]{1,10})-(\d+)-?)+/;
 
 export const extractTicketLabels = (branch: string, prefix = '', suffix = '') => {
   const match = regexpr.exec(branch);
@@ -24,22 +24,28 @@ export const extractTicketLabels = (branch: string, prefix = '', suffix = '') =>
         (tag, i, array): tag is string =>
           !!tag && tag.length > 0 && array.findIndex((val) => tag === val) === i,
       )
-      // Sort alphabetically
-      .sort()
+      // Sort alphabetically then numerically
+      .sort((a, b) => {
+        const [, aTag, aNumString] = regexpr.exec(a) ?? ['', 'a', '1'];
+        const [, bTag, bNumString] = regexpr.exec(b) ?? ['', 'a', '1'];
+        if (aTag === bTag) {
+          return Number(aNumString) > Number(bNumString) ? 1 : -1;
+        }
+        return aTag.localeCompare(bTag);
+      })
   );
 };
 
 const prependTagToMessage = (issueTag: string, message: string) => {
   const splitMessage = message.split(/\n/);
   const firstNonCommentLine = splitMessage.findIndex((line) => !line.trimLeft().startsWith('#'));
-  if (firstNonCommentLine < 0) {
-    return message;
-  }
-  return [
-    ...splitMessage.slice(0, firstNonCommentLine),
-    `${issueTag} ${splitMessage[firstNonCommentLine].trim()}`,
-    ...splitMessage.slice(firstNonCommentLine + 1),
-  ].join('\n');
+  return firstNonCommentLine < 0
+    ? message
+    : [
+        ...splitMessage.slice(0, firstNonCommentLine),
+        `${issueTag} ${splitMessage[firstNonCommentLine].trim()}`,
+        ...splitMessage.slice(firstNonCommentLine + 1),
+      ].join('\n');
 };
 
 export const processBranchString = (branch: string, msg: string) => {
