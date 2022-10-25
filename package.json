@@ -1,6 +1,6 @@
 {
   "name": "prepare-branch-commit",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": false,
   "description": "Add text to commits based on Jira ticket numbers in the branch name.",
   "repository": "https://github.com/Renddslow/prepare-branch-commit",
@@ -9,9 +9,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/jest/bin/jest.js",
-    "build": "yarn build:cjs && mkdir -p ./bin && sed '1s;^;#!/usr/bin/env node\\n;' ./src/index.js > ./bin/index.js; rm ./src/index.js",
-    "build:all": "yarn build && yarn build:gha",
-    "build:cjs": "esbuild --outfile=src/index.js src/index.ts --minify --format=cjs",
+    "build": "yarn build:cjs && yarn build:gha",
+    "build:cjs": "esbuild --outfile=src/index.js src/index.ts --minify --format=cjs --target=node16 --tree-shaking=true && mkdir -p ./bin && sed '1s;^;#!/usr/bin/env node\\n;' ./src/index.js > ./bin/index.js; rm ./src/index.js",
     "build:gha": "ncc build ./src/gha.ts --license licenses.txt",
     "prepare": "husky install"
   },
@@ -22,7 +21,7 @@
   },
   "prettier": "@dmsi/prettier-config",
   "dependencies": {
-    "@actions/core": "^1.6.0"
+    "@actions/core": "^1.10.0"
   },
   "devDependencies": {
     "@dmsi/prettier-config": "^1.3.0",
