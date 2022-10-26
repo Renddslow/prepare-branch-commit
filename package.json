@@ -1,6 +1,6 @@
 {
   "name": "prepare-branch-commit",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "private": false,
   "description": "Add text to commits based on Jira ticket numbers in the branch name.",
   "repository": "https://github.com/Renddslow/prepare-branch-commit",
