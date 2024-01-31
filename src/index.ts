@@ -72,7 +72,8 @@ const main = () => {
     const [msgFile] = process.env.HUSKY_GIT_PARAMS
       ? process.env.HUSKY_GIT_PARAMS.split(' ')
       : process.argv.slice(2);
-    if (msgFile) {
+    const parentCount = (await execute('git show --no-patch --format="%P" HEAD')).split(' ').length
+    if (msgFile && parentCount === 1) {
       const msg = (await read(msgFile)).toString();
 
       const out = await execute('git branch');
